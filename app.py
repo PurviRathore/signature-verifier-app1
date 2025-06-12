@@ -99,5 +99,6 @@ if img1 and img2:
         if result == "✔ Genuine":
             st.success("🟢 Prediction: ✔ Genuine Signature")
         else:
-            st.error("🔴 Predicti
+            st.error("🔴 Prediction: ❌ Forged Signature")
+
 
