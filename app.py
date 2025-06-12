@@ -10,7 +10,7 @@ import os
 
 # ✅ Download model from Google Drive (one-time)
 model_path = "siamesemodel2.pth"
-file_id = "1GUpQ35EtbkEZZuqC8ttmxdRg5xrdIuMy"  # replace with your actual file ID
+file_id = "1Cj3orbD3B7dHVQHNSjG04tXkAuYjodXR"  # replace with your actual file ID
 url = f"https://drive.google.com/uc?id={file_id}"
 
 if not os.path.exists(model_path):
