@@ -8,17 +8,26 @@ import timm
 import gdown
 import os
 
-# ✅ Download model from Google Drive (one-time)
+# ✅ Setup page
+st.set_page_config(page_title="Signature Verification", layout="centered")
+st.title("✍️ Signature Verification Dashboard")
+st.markdown("Upload two signature images to verify whether they are **Genuine** or **Forged**.")
+
+# ✅ Download model from Google Drive if not present
 model_path = "siamesemodel2.pth"
-file_id = "1Cj3orbD3B7dHVQHNSjG04tXkAuYjodXR"  # replace with your actual file ID
+file_id = "1Cj3orbD3B7dHVQHNSjG04tXkAuYjodXR"  # Replace with your actual file ID
 url = f"https://drive.google.com/uc?id={file_id}"
 
 if not os.path.exists(model_path):
     st.info("⏳ Downloading model from Google Drive...")
-    gdown.download(url, model_path, quiet=False)
-    st.success("✅ Model downloaded successfully!")
+    try:
+        gdown.download(url, model_path, quiet=False)
+        st.success("✅ Model downloaded successfully!")
+    except Exception as e:
+        st.error("❌ Failed to download model. Make sure it's shared as 'Anyone with the link'")
+        st.stop()
 
-# ✅ Define model class
+# ✅ Define the model
 class SiameseModel(nn.Module):
     def __init__(self):
         super(SiameseModel, self).__init__()
@@ -39,11 +48,16 @@ class SiameseModel(nn.Module):
     def forward(self, x):
         return self.model.forward_features(x)
 
-# ✅ Load model
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-model = SiameseModel().to(device)
-model.load_state_dict(torch.load(model_path, map_location=device))
-model.eval()
+# ✅ Load model only once using Streamlit's caching
+@st.cache_resource
+def load_model():
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model = SiameseModel().to(device)
+    model.load_state_dict(torch.load(model_path, map_location=device))
+    model.eval()
+    return model, device
+
+model, device = load_model()
 
 # ✅ Image preprocessing
 transform = transforms.Compose([
@@ -65,11 +79,7 @@ def predict(img1, img2, similarity_threshold=95.0):
         prediction = "✔ Genuine" if similarity >= similarity_threshold else "❌ Forged"
         return similarity, prediction
 
-# ✅ Streamlit UI
-st.set_page_config(page_title="Signature Verification", layout="centered")
-st.title("✍️ Signature Verification Dashboard")
-st.markdown("Upload two signature images to verify whether they are **Genuine** or **Forged**.")
-
+# ✅ Upload images
 img1 = st.file_uploader("Upload Signature 1", type=["png", "jpg", "jpeg"])
 img2 = st.file_uploader("Upload Signature 2", type=["png", "jpg", "jpeg"])
 
@@ -89,5 +99,5 @@ if img1 and img2:
         if result == "✔ Genuine":
             st.success("🟢 Prediction: ✔ Genuine Signature")
         else:
-            st.error("🔴 Prediction: ❌ Forged Signature")
+            st.error("🔴 Predicti
 
