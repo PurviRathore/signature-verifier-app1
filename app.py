@@ -8,6 +8,8 @@ import timm
 import gdown
 import os
 
+os.environ["STREAMLIT_WATCH_USE_POLLING"] = "true"
+
 # ✅ Setup page
 st.set_page_config(page_title="Signature Verification", layout="centered")
 st.title("✍️ Signature Verification Dashboard")
