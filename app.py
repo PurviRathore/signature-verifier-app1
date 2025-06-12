@@ -1,3 +1,6 @@
+import os
+
+os.environ["STREAMLIT_WATCH_USE_POLLING"] = "true"
 import streamlit as st
 import torch
 import torch.nn as nn
@@ -6,9 +9,7 @@ import torch.nn.functional as F
 from PIL import Image
 import timm
 import gdown
-import os
 
-os.environ["STREAMLIT_WATCH_USE_POLLING"] = "true"
 
 # ✅ Setup page
 st.set_page_config(page_title="Signature Verification", layout="centered")
